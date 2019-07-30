@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../lib/highlight/styles/monokai.css">
+  <style>
+    html {
+      font-size: 18px;
+    }
+
+    html,
+    body,
+    #app,
+    .left,
+    .right {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body,
+    pre {
+      margin: 0;
+    }
+
+    pre {
+      height: 100%;
+    }
+
+    code {
+      height: 100%;
+      width: 100%;
+      overflow: auto;
+    }
+
+    .left {
+      height: 100%;
+    }
+
+    .left,
+    .right {
+      width: 50%;
+      float: left;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="left">
+      <pre style="white-space: normal;">
+        <code class="hljs html" style="white-space: pre;">{{code}}</code>
+      </pre>
+    </div>
+    <div class="right">
+      <iframe :src="url" frameborder="0"></iframe>
+    </div>
+  </div>
+  <script src="../lib/vue.js"></script>
+  <script src="../lib/highlight/highlight.pack.js"></script>
+  <script>
+    document.addEventListener('keydown', function (event) {
+      if (event.code === 'Escape') {
+        window.close()
+      }
+      if (event.code === 'Space' && event.ctrlKey && example) {
+        window.open(example)
+      }
+    })
+
+    var examples = {
+      echarts_1: '../example/echarts_1/index.html',
+      d3_0: '../example/d3_0/index.html',
+      d3_1: '../example/d3_1/index.html',
+      d3_2: '../example/d3_2/index.html',
+      d3_3: '../example/d3_3/index.html',
+      d3_in_vue_0: '../example/d3_in_vue_0/index.html',
+      d3_in_vue_1: '../example/d3_in_vue_1/index.html',
+      d3_in_vue_2: '../example/d3_in_vue_2/index.html',
+      d3_in_vue_3: '../example/d3_in_vue_3/index.html',
+      vue_0: '../example/vue_0/index.html',
+      vue_1: '../example/vue_1/index.html',
+      vue_2: '../example/vue_2/index.html',
+      vue_2_: '../example/vue_2/index_.html',
+      three_1: '../example/vue_2/three_1.html'
+    }
+
+    var example = examples[window.name]
+
+    fetch(example).then(function (response) {
+      return response.text()
+    }).then(function (code) {
+      var app = new Vue({
+        el: '#app',
+        data: {
+          code: code,
+          url: example
+        },
+      })
+      app.$nextTick(function () {
+        hljs.initHighlightingOnLoad()
+      })
+    })
+  </script>
+</body>
+
+</html>

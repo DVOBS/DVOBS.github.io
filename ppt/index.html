@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../lib/reveal.js-3.8.0/css/reset.css">
+  <link rel="stylesheet" href="../lib/reveal.js-3.8.0/css/reveal.css">
+  <link rel="stylesheet" href="../lib/reveal.js-3.8.0/css/theme/moon.css">
+  <link rel="stylesheet" href="../lib/reveal.js-3.8.0/lib/css/monokai.css">
+  <title>Vue 项目中的数据可视化</title>
+  <style>
+    section[data-example] {
+      position: relative
+    }
+    section[data-example]::after {
+      content: '[CODE]';
+      display: block;
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      font-size: 12px;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <!-- <section>
+        <p class="fragment grow">grow</p>
+        <p class="fragment shrink">shrink</p>
+        <p class="fragment fade-out">fade-out</p>
+        <p class="fragment fade-up">fade-up (also down, left and right!)</p>
+        <p class="fragment fade-in-then-out">fades in, then out when we move to the next step</p>
+        <p class="fragment fade-in-then-semi-out">fades in, then obfuscate when we move to the next step</p>
+        <p class="fragment highlight-current-blue">blue only once</p>
+        <p class="fragment highlight-red">highlight-red</p>
+        <p class="fragment highlight-green">highlight-green</p>
+        <p class="fragment highlight-blue">highlight-blue</p>
+      </section> -->
+      <section>
+        <h2>Vue 项目中的数据可视化</h2>
+      </section>
+
+      <section>
+        <h2>数据可视化</h2>
+        <ul class="fragment fade-up">
+          <li>图表的主体是<span class="fragment highlight-green">数据和几何图形的视觉特征绑定</span>的结果</li>
+          <li>图表是一些简单的相互正交的特征组合而成的结果</li>
+        </ul>
+      </section>
+
+      <section data-example="echarts_1">
+        <h2>主要内容</h2>
+        <ul>
+          <li>d3.js</li>
+          <li>vue.js的响应式原理</li>
+          <li>three.js</li>
+        </ul>
+      </section>
+
+      <section>
+        <section>
+          <h2>D3.js是什么?</h2>
+          <p>
+            D3 是一个可以基于数据来操作文档的 JavaScript 库
+          </p>
+          <p class="fragment fade-up">
+            这其实是在说d3-selection
+          </p>
+        </section>
+
+        <section>
+          <h3>d3-selection</h3>
+          <ol>
+            <li class="fragment fade-up">语法类似JQuery</li>
+            <li class="fragment fade-up">可以绑定数据</li>
+            <li class="fragment fade-up">选择集：enter, update, exit</li>
+          </ol>
+        </section>
+
+        <section>
+          <h3>d3-selection</h3>
+          <pre><code class="hljs javascript" data-line-numbers="">&lt;div id="test1"&gt;&lt;/div&gt;
+&lt;div id="test2"&gt;&lt;/div&gt;
+
+// $("#test1").text("Hello world!");
+d3.select('#test1').text("Hello world!")
+
+// d3-selection 的数据绑定
+d3.select('#test2').datum('Hello world!!').text(d => d)</code></pre>
+        </section>
+
+        <section>
+          <h3>d3-selection</h3>
+          <h4>选择集：enter, update, exit</h4>
+          <ol>
+            <li>enter：没有对应 DOM 节点的数据的占位节点</li>
+            <li>update：数据已经成功的与元素绑定的 DOM 节点</li>
+            <li>exit：没有对应数据的已经存在的 DOM 节点</li>
+          </ol>
+        </section>
+
+        <section data-example="d3_0">
+          <h3>d3-selection</h3>
+          <h4>选择集：enter, update, exit</h4>
+          <pre><code class="hljs javascript" data-line-numbers="3-5,7-15">dataset = [...]
+
+var update = main.selectAll("span").data(dataset, d => d.id)
+var enter = update.enter()
+var exit = update.exit()
+
+update
+  .text(d => d.name)
+  .style("color", "blue")
+enter
+  .append("span")
+  .text(d => d.name)
+  .style("color", "green")
+exit
+  .style("color", "red")</code></pre>
+        </section>
+
+        <section data-example="d3_1">
+          <h3>一个简单的柱形图</h3>
+        </section>
+
+        <section>
+          <h3>除去 d3-selection, d3还能为我们提供</h3>
+          <ul>
+            <li>数据处理的工具函数，和数据布局算法</li>
+            <li>创建数据和几何图形的视觉特征的绑定关系</li>
+            <li>很多工具方法，比如Svg 的 Path 函数支持</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>D3.js</h3>
+          <p>D3.js是一个相互协同工作的 模块集合; <br>你可以单独使用其中某些模块也可以使用默认构建的全部功能。</p>
+        </section>
+
+        <section data-example="d3_2">
+          <h3>一个饼图</h3>
+          <pre><code class="hljs javascript" data-line-numbers="">let data = [
+  { "platform": "Android", "percentage": 40.11 },
+  { "platform": "Windows", "percentage": 36.69 },
+  { "platform": "iOS", "percentage": 13.06 }
+];</code></pre>
+          <pre class="fragment fade-up"><code class="hljs javascript" data-line-numbers="">let pie = d3.pie().value(d => d.percentage);
+data = pie(data)
+console.log(JSON.stringify(data[0]))
+          </code></pre>
+          <pre class="fragment fade-up"><code class="hljs javascript" data-line-numbers="">{
+  "data": { "platform": "Android", "percentage": 40.11 },
+  "index": 0,
+  "value": 40.11,
+  "startAngle": 0,
+  "endAngle": 2.8045689146558335,
+  "padAngle": 0
+}</code></pre>
+        </section>
+
+        <section data-example="d3_3">
+          <h3>一个复杂图表树图</h3>
+        </section>
+
+      </section>
+
+      <section>
+        <section>
+          <h2>在Vue中使用D3.js</h2>
+        </section>
+
+        <section data-example="d3_in_vue_0">
+          <h3>在Vue中使用D3.js</h3>
+          <pre><code class="hljs javascript" data-line-numbers="3-6,7-13">&lt;svg width="400" height="400"&gt;
+  &lt;g transform="translate(200,200)"&gt;
+    &lt;path v-for="arc in arcs"
+      :d="arcPathD(arc)"
+      :fill="colorScale(arc.data.label)"&gt;
+    &lt;/path&gt;
+    &lt;text
+      v-for="arc in arcs"
+      :transform="`translate(${arcPathD.centroid(arc)})`"
+      text-anchor="middle"
+    &gt;
+      {{arc.data.label}}:{{arc.data.value}}
+    &lt;/text&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</code></pre>
+        </section>
+
+        <section data-example="d3_in_vue_0">
+          <h3>在Vue中使用D3.js</h3>
+          <pre><code class="hljs javascript" data-line-numbers="3,6,9-11">computed: {
+  colorScale () {
+    return d3.scaleOrdinal().range(d3.schemeCategory10)
+  },
+  arcs () {
+    return d3.pie().sort(null).value(d => d.value)(this.stats)
+  },
+  arcPathD () {
+    return d3.arc()
+      .outerRadius(this.outerRadius)
+      .innerRadius(this.innerRadius)
+  }
+}</code></pre>
+        </section>
+
+        <section data-example="d3_in_vue_1">
+          <h3>在Vue中使用D3.js绘制力学布局图</h3>
+        </section>
+
+        <section data-example="d3_in_vue_3">
+          <h3>在Vue中使用D3.js绘制力学布局图</h3>
+          <h4>Canvas</h4>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>Vue 的响应式原理</h2>
+        </section>
+
+        <section>
+          <p>
+            <img src="./image/data.png" style="width: 800px;">
+          </p>
+        </section>
+
+        <section data-example="vue_0">
+          <h3>依赖收集</h3>
+          <pre><code class="hljs javascript" data-line-numbers="3-11">var renderCount = 0
+var app = new Vue({
+  el: '#app',
+  render: function (createElement) {
+    return createElement('div', [
+      createElement('div', this.obj.key1),
+      createElement('div', ++renderCount)
+    ])
+  },
+  data: {
+    obj: { key1: 'value1', key2: 'value2'}
+  }
+})</code></pre>
+        </section>
+
+        <section data-example="vue_1">
+          <h3>data中对象的变化</h3>
+          <pre><code class="hljs javascript" data-line-numbers="4-7,8-11">var app = new Vue({
+  el: '#app',
+  data: {
+    obj: {
+      key1: 'value1',
+      key2: 'value2'
+    },
+    array: [
+      { name: 'item-1' },
+      { name: 'item-2' }
+    ]
+  }
+})</code></pre>
+        </section>
+
+        <section data-example="vue_2">
+          <h3>这是一段有问题的代码</h3>
+          <pre><code class="hljs javascript" data-line-numbers="4-6">computed: {
+  sum () {
+    var sum = 0
+    for (let index = 0; index < this.array.length; index++) {
+      sum += this.array[index].value
+    }
+    return sum
+  }
+}</code></pre>
+        </section>
+
+        <section data-example="vue_2_">
+          <h3>修正方案</h3>
+          <pre><code class="hljs javascript" data-line-numbers="4-6">computed: {
+  sum () {
+    var sum = 0
+    var array = this.array
+    for (let index = 0; index < array.length; index++) {
+      sum += array[index].value
+    }
+    return sum
+  }
+}</code></pre>
+        </section>
+      </section>
+
+      <section>
+        <section data-example="three_1">
+          <h2>Three.js</h2>
+        </section>
+      </section>
+
+      <section>
+        <h2>Thanks</h2>
+        <h3>♪(･ω･)ﾉ</h3>
+      </section>
+    </div>
+    <script src="../lib/reveal.js-3.8.0/js/reveal.js"></script>
+
+    <script>
+      var currentExample
+      function openCodeView() {
+        var newWindow = window.open('./code-view.html')
+        newWindow.name = currentExample
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.code === 'Space' && event.ctrlKey && currentExample) {
+          openCodeView()
+        }
+      })
+    </script>
+
+    <script>
+      var reveal = Reveal.initialize({
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+        transition: 'slide',
+        dependencies: [{
+          src: '../../lib/reveal.js-3.8.0/plugin/highlight/highlight.js',
+          async: true
+        }, ]
+      });
+      currentExample = Reveal.getCurrentSlide().dataset.example
+      Reveal.addEventListener( 'slidechanged', function( event ) {
+        currentExample = event.currentSlide.dataset.example
+        console.log(currentExample)
+      })
+    </script>
+</body>
+
+</html>

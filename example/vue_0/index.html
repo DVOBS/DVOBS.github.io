@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div id="app">
+</div>
+<script src="../../lib/vue.js"></script>
+<script>
+  var renderCount = 0
+  var app = new Vue({
+    el: '#app',
+    render: function (createElement) {
+      return createElement('div', [
+        createElement('div', this.obj.key1),
+        createElement('div', ++renderCount)
+      ])
+    },
+    data: {
+      obj: {
+        key1: 'value1',
+        key2: 'value2'
+      }
+    }
+  })
+</script>
+<label>app.obj.key1</label>
+<input type="text" oninput="app.obj.key1 = this.value">
+<br>
+<label>app.obj.key2</label>
+<input type="text" oninput="app.obj.key2 = this.value">
+</body>
+</html>

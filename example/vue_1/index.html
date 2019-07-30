@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div id="app">
+  <p>{{ obj.key1 }}</p>
+  <p>{{ array[0].name }}</p>
+</div>
+  <script src="../../lib/vue.js"></script>
+  <script>
+    var data = {
+      obj: {
+        key1: 'value1',
+        key2: 'value2'
+      },
+      array: [
+        { name: 'item-1' },
+        { name: 'item-2' }
+      ]
+    }
+
+    console.log(data.obj)
+    console.log(data.array)
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        obj: {
+          key1: 'value1',
+          key2: 'value2'
+        },
+        array: [
+          { name: 'item-1' },
+          { name: 'item-2' }
+        ]
+      },
+      updated() {
+        console.log('updated')
+      },
+    })
+
+    console.log(app.obj)
+    console.log(app.array)
+  </script>
+</body>
+</html>

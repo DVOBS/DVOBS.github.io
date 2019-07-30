@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Helvetica Neue, Arial, sans-serif;
+    }
+
+    polygon {
+      fill: #42b983;
+      opacity: .75;
+    }
+
+    circle {
+      fill: transparent;
+      stroke: #999;
+    }
+
+    text {
+      font-family: Helvetica Neue, Arial, sans-serif;
+      font-size: 18px;
+      fill:white;
+    }
+
+    label {
+      display: inline-block;
+      margin-left: 10px;
+      width: 20px;
+    }
+
+    #raw {
+      position: absolute;
+      top: 0;
+      left: 400px;
+    }
+
+    label {
+      display: inline-block;
+      text-align: center;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- demo root element -->
+  <div id="demo">
+    <!-- Use the component -->
+    <div>
+      <svg width="400" height="400">
+        <g transform="translate(200,200)">
+          <path v-for="arc in arcs" :d="arcPathD(arc)" :fill="colorScale(arc.data.label)"></path>
+          <text
+            v-for="arc in arcs"
+            :transform="`translate(${arcPathD.centroid(arc)})`"
+            text-anchor="middle"
+          >{{arc.data.label}}:{{arc.data.value}}</text>
+        </g>
+      </svg>
+    </div>
+    <!-- controls -->
+    <div v-for="stat in stats">
+      <label :style="{
+        background: colorScale(stat.label)
+      }">{{stat.label}}</label>
+      <input type="range" v-model="stat.value" min="0" max="200">
+      <span>{{stat.value}}</span>
+      <button @click="remove(stat)" class="remove">X</button>
+    </div>
+    <form id="add">
+      <input name="newlabel" v-model="newLabel">
+      <button @click="add">Add a Stat</button>
+    </form>
+    <form>
+      outerRadius:<input type="range" v-model="outerRadius" min="125" max="200"><br>
+      innerRadius:<input type="range" v-model="innerRadius" min="0" max="75"><br>
+    </form>
+    <pre id="raw">{{ stats }}</pre>
+  </div>
+
+  <script src="../../lib/d3.js"></script>
+  <script src="../../lib/vue.js"></script>
+  <script>
+    var stats = [{
+        label: 'A',
+        value: 100
+      },
+      {
+        label: 'B',
+        value: 100
+      },
+      {
+        label: 'C',
+        value: 100
+      },
+      {
+        label: 'D',
+        value: 100
+      },
+      {
+        label: 'E',
+        value: 100
+      },
+      {
+        label: 'F',
+        value: 100
+      }
+    ]
+    new Vue({
+      el: '#demo',
+      data: {
+        newLabel: '',
+        stats: stats,
+        outerRadius: 200,
+        innerRadius: 50
+      },
+      computed: {
+        colorScale () {
+          return d3.scaleOrdinal().range(d3.schemeCategory10)
+        },
+        arcs () {
+          return d3.pie().sort(null).value(d => d.value)(this.stats)
+        },
+        arcPathD () {
+          return d3.arc().outerRadius(this.outerRadius).innerRadius(this.innerRadius)
+        }
+      },
+      methods: {
+        add: function (e) {
+          e.preventDefault()
+          if (!this.newLabel) return
+          this.stats.push({
+            label: this.newLabel,
+            value: 100
+          })
+          this.newLabel = ''
+        },
+        remove: function (stat) {
+          if (this.stats.length > 3) {
+            this.stats.splice(this.stats.indexOf(stat), 1)
+          } else {
+            alert('Can\'t delete more!')
+          }
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

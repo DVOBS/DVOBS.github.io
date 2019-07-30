@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,
+    body,
+    #app {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .echarts {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <v-chart
+      :autoresize="true"
+      :init-options="{ renderer: 'svg'}"
+      :options="option"
+    />
+  </div>
+
+  <script src="../../lib/vue.js"></script>
+  <script src="../../lib/echarts.js"></script>
+  <script src="../../lib/vue-echarts.js"></script>
+
+  <script>
+    Vue.component('v-chart', VueECharts)
+    var app = new Vue({
+      el: '#app',
+      data: {},
+      computed: {
+        option: function () {
+          var option = {
+            title: {
+              text: 'ECharts 入门示例'
+            },
+            tooltip: {},
+            legend: {
+              data: ['销量']
+            },
+            xAxis: {
+              data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+            },
+            yAxis: {},
+            series: [{
+              name: '销量',
+              type: 'bar',
+              data: [5, 20, 36, 10, 10, 20]
+            }]
+          }
+          return option
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

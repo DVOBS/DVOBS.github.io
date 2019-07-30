@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    svg {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <svg id="demo" :width="w" :height="h" :data-alpha='alpha'>
+    <g :transform="`translate(${w/2}, ${h/2})`">
+      <line v-for="link in graphData.links"
+        :key="link.source.id + '-' + link.target.id"
+        :x1="link.source.x"
+        :y1="link.source.y"
+        :x2="link.target.x"
+        :y2="link.target.y"
+        style="
+          stroke:rgb(0,255,0);
+          stroke-width: 1;
+        "
+      />
+      <g v-for="node in graphData.nodes" :key="node.id" :transform="'translate(' + node.x + ',' + node.y + ')'">
+        <circle r="5" fill="#0000ff" />
+      </g>
+    </g>
+  </svg>
+  <div id="Stats-output"></div>
+
+  <script src="../../lib/stats.min.js"></script>
+  <script src="../../lib/d3.js"></script>
+  <script src="../../lib/vue.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#demo',
+      data: {
+        w: 0,
+        h: 0,
+        alpha: 1,
+        graphData: {
+          nodes: [],
+          links: [],
+        }
+      },
+      methods: {
+        getData() {
+          d3.json('./graph.json').then(data => {
+            this.graphData = data
+            this.forceSimulation()
+          })
+        },
+        forceSimulation() {
+          var nodes = this.graphData.nodes
+          var links = this.graphData.links
+
+          this.$_forceSimulation = d3.forceSimulation(nodes)
+            .force('charge', d3.forceManyBody().strength(-18))
+            .force('link', d3.forceLink(links).iterations(4).id(function(d) { return d.id; }))
+            .force('x', d3.forceX())
+            .force('y', d3.forceY())
+            .on('tick', (alpha) => {
+              this.alpha = this.$_forceSimulation.alpha()
+            })
+        }
+      },
+      mounted() {
+        window.setTimeout(()=>{
+          this.getData()
+        }, 2000)
+      },
+    })
+
+    function setSize() {
+      app.w = window.innerWidth
+      app.h = window.innerHeight
+    }
+
+    setSize()
+    window.addEventListener('resize', setSize)
+  
+    function initStats() {
+      var stats = new Stats()
+      stats.setMode(0); // 0: fps, 1: ms 
+      stats.domElement.style.position = 'absolute'
+      stats.domElement.style.left = '0px'
+      stats.domElement.style.top = '0px'
+      document.getElementById("Stats-output").appendChild(stats.domElement)
+      return stats;
+    }
+
+    var stats = initStats()
+    function run() {
+      stats.update()
+      requestAnimationFrame(run)
+    }
+
+    run()
+  </script>
+</body>
+
+</html>

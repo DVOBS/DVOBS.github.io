@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  span {
+    display: inline-block;
+    padding: 5px;
+    border: solid;
+    border-radius: 5px;
+    margin: 5px;
+  }
+  </style>
+</head>
+
+<body>
+  <div id="test1"></div>
+  <div id="test2"></div>
+  <div id="main"></div>
+  <button onclick="updateDataset()">选择集：enter, update, exit</button>
+  <script src="../../lib/d3.js"></script>
+  <script>
+    // $("#test1").text("Hello world!");
+
+    d3.select('#test1').text("Hello world!")
+
+    d3.select('#test2').datum('Hello world!!').text(d => d)
+
+    var dataset = [{
+      id: 1,
+      name: '壹'
+    },{
+      id: 2,
+      name: '贰'
+    },{
+      id: 3,
+      name: '叁'
+    }]
+
+    var main = d3.select('#main')
+
+    var spans = main.selectAll("span").data(dataset, d => d.id)
+    spans.enter().append("span").text(d => d.name)
+    
+    function updateDataset() {
+      dataset = [{
+        id: 1,
+        name: '壹'
+      },{
+        id: 2,
+        name: '二'
+      },{
+        id: 4,
+        name: '肆'
+      }]
+
+      var update = main.selectAll("span").data(dataset, d => d.id)
+      var enter = update.enter()
+      var exit = update.exit()
+
+      update
+        .text(d => d.name)
+        .style("color", "blue")
+      enter
+        .append("span")
+        .text(d => d.name)
+        .style("color", "green")
+      exit
+        .style("color", "red")
+    }
+  </script>
+</body>
+
+</html>
