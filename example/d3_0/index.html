@@ -26,7 +26,7 @@
   <script>
     // $("#test1").text("Hello world!");
 
-    d3.select('#test1').text("Hello world!")
+    d3.select('#test1').text('Hello world!')
 
     d3.select('#test2').datum('Hello world!!').text(d => d)
 
@@ -43,8 +43,8 @@
 
     var main = d3.select('#main')
 
-    var spans = main.selectAll("span").data(dataset, d => d.id)
-    spans.enter().append("span").text(d => d.name)
+    var spans = main.selectAll('span').data(dataset, d => d.id)
+    spans.enter().append('span').text(d => d.name)
     
     function updateDataset() {
       dataset = [{
@@ -58,19 +58,19 @@
         name: '肆'
       }]
 
-      var update = main.selectAll("span").data(dataset, d => d.id)
+      var update = main.selectAll('span').data(dataset, d => d.id)
       var enter = update.enter()
       var exit = update.exit()
 
       update
         .text(d => d.name)
-        .style("color", "blue")
+        .style('color', 'blue')
       enter
-        .append("span")
+        .append('span')
         .text(d => d.name)
-        .style("color", "green")
+        .style('color', 'green')
       exit
-        .style("color", "red")
+        .style('color', 'red')
     }
   </script>
 </body>

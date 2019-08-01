@@ -21,30 +21,30 @@
     let barWidth = (svgWidth / dataset.length)
 
     let svg = d3.select('svg')
-      .attr("width", svgWidth)
-      .attr("height", svgHeight)
+      .attr('width', svgWidth)
+      .attr('height', svgHeight)
 
-    let barChart = svg.selectAll("rect")
+    let barChart = svg.selectAll('rect')
       .data(dataset)
       .enter()
-      .append("rect")
-      .attr("y", d => svgHeight - d)
-      .attr("height", d => d)
-      .attr("width", barWidth - barPadding)
-      .attr("fill", "#0088ff")
-      .attr("transform", (d, i) => {
+      .append('rect')
+      .attr('y', d => svgHeight - d)
+      .attr('height', d => d)
+      .attr('width', barWidth - barPadding)
+      .attr('fill', '#0088ff')
+      .attr('transform', (d, i) => {
         let translate = [barWidth * i, 0]
-        return "translate(" + translate + ")"
+        return 'translate(' + translate + ')'
       })
 
-    let text = svg.selectAll("text")
+    let text = svg.selectAll('text')
       .data(dataset)
       .enter()
-      .append("text")
+      .append('text')
       .text(d => d)
-      .attr("y", (d, i) => svgHeight - d - 2)
-      .attr("x", (d, i) => barWidth * i)
-      .attr("fill", "#A64C38")
+      .attr('y', (d, i) => svgHeight - d - 2)
+      .attr('x', (d, i) => barWidth * i)
+      .attr('fill', '#A64C38')
   </script>
 </body>
 
