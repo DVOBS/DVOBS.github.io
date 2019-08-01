@@ -87,8 +87,8 @@
           <pre><code class="hljs javascript" data-line-numbers="">&lt;div id="test1"&gt;&lt;/div&gt;
 &lt;div id="test2"&gt;&lt;/div&gt;
 
-// $("#test1").text("Hello world!");
-d3.select('#test1').text("Hello world!")
+// $('#test1').text('Hello world!');
+d3.select('#test1').text('Hello world!')
 
 // d3-selection 的数据绑定
 d3.select('#test2').datum('Hello world!!').text(d => d)</code></pre>
@@ -109,19 +109,19 @@ d3.select('#test2').datum('Hello world!!').text(d => d)</code></pre>
           <h4>选择集：enter, update, exit</h4>
           <pre><code class="hljs javascript" data-line-numbers="3-5,7-15">dataset = [...]
 
-var update = main.selectAll("span").data(dataset, d => d.id)
+var update = main.selectAll('span').data(dataset, d => d.id)
 var enter = update.enter()
 var exit = update.exit()
 
 update
   .text(d => d.name)
-  .style("color", "blue")
+  .style('color', 'blue')
 enter
-  .append("span")
+  .append('span')
   .text(d => d.name)
-  .style("color", "green")
+  .style('color', 'green')
 exit
-  .style("color", "red")</code></pre>
+  .style('color', 'red')</code></pre>
         </section>
 
         <section data-example="d3_1">
@@ -145,21 +145,21 @@ exit
         <section data-example="d3_2">
           <h3>一个饼图</h3>
           <pre><code class="hljs javascript" data-line-numbers="">let data = [
-  { "platform": "Android", "percentage": 40.11 },
-  { "platform": "Windows", "percentage": 36.69 },
-  { "platform": "iOS", "percentage": 13.06 }
+  { 'platform': 'Android', 'percentage': 40.11 },
+  { 'platform': 'Windows', 'percentage': 36.69 },
+  { 'platform': 'iOS', 'percentage': 13.06 }
 ];</code></pre>
           <pre class="fragment fade-up"><code class="hljs javascript" data-line-numbers="">let pie = d3.pie().value(d => d.percentage);
 data = pie(data)
 console.log(JSON.stringify(data[0]))
           </code></pre>
           <pre class="fragment fade-up"><code class="hljs javascript" data-line-numbers="">{
-  "data": { "platform": "Android", "percentage": 40.11 },
-  "index": 0,
-  "value": 40.11,
-  "startAngle": 0,
-  "endAngle": 2.8045689146558335,
-  "padAngle": 0
+  'data': { 'platform': 'Android', 'percentage': 40.11 },
+  'index': 0,
+  'value': 40.11,
+  'startAngle': 0,
+  'endAngle': 2.8045689146558335,
+  'padAngle': 0
 }</code></pre>
         </section>
 
