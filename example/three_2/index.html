@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8>
+  <title>My first three.js app</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dat.gui@0.7.6/build/dat.gui.css">
+  <style>
+    body {
+      margin: 0;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.104.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.104.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@5.9.2/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.6/build/dat.gui.min.js"></script>
+
+  <script>
+    var SCREEN_WIDTH = window.innerWidth
+    var SCREEN_HEIGHT = window.innerHeight
+    var scene = new THREE.Scene()
+    var camera = new THREE.PerspectiveCamera(75, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 100000)
+    var updateFns = []
+
+    var renderer = new THREE.WebGLRenderer({
+      antialias: true
+    })
+    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+    document.body.appendChild(renderer.domElement)
+
+    camera.position.z = 5
+
+    // 摄像机的控制器
+    var controls = new THREE.OrbitControls(camera, document.body)
+    controls.maxPolarAngle = Math.PI * 0.5
+    controls.minDistance = 0
+    controls.maxDistance = 7500
+    controls.reset()
+
+    function animate(timestamp) {
+      requestAnimationFrame(animate)
+      for (let index = 0; index < updateFns.length; index++) {
+        var update = updateFns[index];
+        update(timestamp)
+      }
+      renderer.render(scene, camera)
+    }
+    animate()
+
+    function onWindowResize() {
+      var SCREEN_WIDTH = window.innerWidth
+      var SCREEN_HEIGHT = window.innerHeight
+      aspect = SCREEN_WIDTH / SCREEN_HEIGHT
+      renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+      camera.aspect = aspect
+      camera.updateProjectionMatrix()
+    }
+
+    window.addEventListener('resize', onWindowResize, false)
+  </script>
+
+  <script>
+    // 点状云的着色器 (GLSL)
+    var vertexshader = ['',
+      'attribute float size;',
+      'attribute vec3 customColor;',
+      'attribute float timeOffest;',
+      'varying vec3 vColor;',
+      'uniform float time;',
+      'varying vec3 vPosition;',
+      'void main() {',
+      '    vColor = customColor;',
+      '    vPosition = position;',
+      '    vPosition.z += sin( time / 10.0 + timeOffest );',
+      '    vec4 mvPosition = modelViewMatrix * vec4( vPosition, 1.0 );',
+      '    gl_PointSize = size * ( 0.9 + 0.1 * sin( timeOffest + time )) * ( 500.0 / length( mvPosition.xyz ) );',
+      '    gl_Position = projectionMatrix * mvPosition;',
+      '}'
+    ].join('')
+
+    var fragmentshader = ['',
+      'uniform vec3 color;',
+      'uniform sampler2D texture;',
+      'varying vec3 vColor;',
+      'void main() {',
+      '    gl_FragColor = vec4(color * vColor, 1.0);',
+      '    gl_FragColor = gl_FragColor * texture2D(texture, gl_PointCoord);',
+      '}'
+    ].join('')
+
+    var uniforms = {
+      color: {
+        type: "c",
+        value: new THREE.Color(0xffffff)
+      },
+      texture: {
+        type: "t",
+        value: THREE.ImageUtils.loadTexture("./static/dot.png")
+      },
+      time: {
+        value: 1.0
+      }
+    }
+
+    // 点状云的材质
+    var material = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      vertexShader: vertexshader,
+      fragmentShader: fragmentshader,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+      // fog: true
+    })
+
+    d3.json('./static/points.json').then(function (points) {
+      console.log(points.length)
+
+      // 点状云的几何体
+      var geometry = new THREE.BufferGeometry()
+
+      var vertices = new Float32Array(points.length * 3)
+      var vertices1 = new Float32Array(points.length * 3)
+      var vertices2 = new Float32Array(points.length * 3)
+
+      var colors = new Float32Array(points.length * 3)
+      var sizes = new Float32Array(points.length)
+      var timeOffests = new Float32Array(points.length)
+
+      for (var i = 0; i < points.length; i++) {
+        var point = points[i]
+        var lat = point.lat
+        var lng = point.lng
+
+        vertices2[i * 3 + 0] = point.lng * 2
+        vertices2[i * 3 + 1] = -100 + 20 * (-0.2 / Math.log(Math.random() * 10))
+        vertices2[i * 3 + 2] = -point.lat * 2
+
+        var r = 200 + 20 * (-0.1 / Math.log(Math.random() + 1))
+        var x = 0
+        var y = 0
+        var z = 0
+
+        var y = Math.sin(lat / 180 * Math.PI) * r
+        var r0 = Math.cos(lat / 180 * Math.PI) * r
+
+        var x = Math.sin(lng / 180 * Math.PI) * r0
+        var z = Math.cos(lng / 180 * Math.PI) * r0
+
+        sizes[i] = 1 + 1 * Math.random()
+        timeOffests[i] = 2 * Math.PI * Math.random()
+        vertices[i * 3 + 0] = x
+        vertices[i * 3 + 1] = y
+        vertices[i * 3 + 2] = z
+        vertices1[i * 3 + 0] = x
+        vertices1[i * 3 + 1] = y
+        vertices1[i * 3 + 2] = z
+        colors[i * 3 + 0] = 0.4
+        colors[i * 3 + 1] = 0.4 + Math.random() * 0.4
+        colors[i * 3 + 2] = 0.9 + Math.random() * 0.1
+      }
+
+      geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3))
+      geometry.addAttribute('customColor', new THREE.BufferAttribute(colors, 3))
+      geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3))
+      geometry.addAttribute('timeOffest', new THREE.BufferAttribute(timeOffests, 1))
+      geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1))
+
+      var points = new THREE.Points(geometry, material)
+      scene.add(points)
+
+      // 线框图
+      var globeBufferGeometry = new THREE.SphereBufferGeometry(200, 64, 64);
+      var globeTexture = new THREE.TextureLoader().load("./static/map_outline.png")
+      var globeShieldMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        side: THREE.FrontSide,
+        opacity: 1,
+        fog: false,
+        depthWrite: false,
+        depthTest: false
+        //,shading: THREE.FlatShading
+      });
+      var globeShieldMesh = new THREE.Mesh(globeBufferGeometry, globeShieldMaterial)
+      scene.add(globeShieldMesh)
+
+      var globeInnerMaterial = new THREE.MeshBasicMaterial({
+        map: globeTexture,
+        color: 0x00aaff,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BothSide,
+        fog: true,
+        depthWrite: false,
+        depthTest: false
+      });
+      globeInnerMaterial.needsUpdate = true;
+      var globeInnerMesh = new THREE.Mesh(globeBufferGeometry, globeInnerMaterial);
+      globeInnerMesh.rotation.y = -Math.PI *  0.5
+      globeInnerMesh.scale.x = 0.99
+      globeInnerMesh.scale.y = 0.99
+      globeInnerMesh.scale.z = 0.99
+      points.add(globeInnerMesh);
+
+      // 一组点光源
+      var lightShield1,
+        lightShield2,
+        lightShield3,
+        lightShieldIntensity = 1.25,
+        lightShieldDistance = 500,
+        lightShieldDecay = 2.0,
+        colorBase = 0x0000FF;
+
+      scene.add(camera)
+
+      lightShield1 = new THREE.PointLight(colorBase, lightShieldIntensity, lightShieldDistance, lightShieldDecay);
+      lightShield1.position.x = -300;
+      lightShield1.position.y = -300;
+      lightShield1.position.z = -150;
+      lightShield1.name = 'lightShield1';
+      camera.add(lightShield1);
+
+      lightShield2 = new THREE.PointLight(colorBase, lightShieldIntensity, lightShieldDistance, lightShieldDecay);
+      lightShield2.position.x = 300;
+      lightShield2.position.y = -300;
+      lightShield2.position.z = -150;
+      lightShield2.name = 'lightShield2';
+      camera.add(lightShield2);
+
+      lightShield3 = new THREE.PointLight(colorBase, lightShieldIntensity, lightShieldDistance, lightShieldDecay);
+      lightShield3.position.x = 0;
+      lightShield3.position.y = 300;
+      lightShield3.position.z = 0;
+      lightShield3.name = 'lightShield3';
+      camera.add(lightShield3);
+
+      // 动画部分
+      var t = 1
+      var run = true
+      var timestampLast = 0
+      updateFns.push(function (timestamp) {
+        t += 0.01
+
+        if (t > 1) {
+          t = 1
+        }
+
+        if (t < 1) {
+          var positions = geometry.attributes.position.array
+          for (var v = 0; v < positions.length / 3; v++) {
+            var timeOffest = 0.99 * timeOffests[v] / (2 * Math.PI)
+
+            var tt = t < timeOffest ? 0 : (t - timeOffest) / (1 - timeOffest)
+            positions[v * 3 + 0] = tt * vertices1[v * 3 + 0] + (1 - tt) * vertices2[v * 3 + 0]
+            positions[v * 3 + 1] = tt * vertices1[v * 3 + 1] + (1 - tt) * vertices2[v * 3 + 1]
+            positions[v * 3 + 2] = tt * vertices1[v * 3 + 2] + (1 - tt) * vertices2[v * 3 + 2]
+          }
+          geometry.attributes.position.needsUpdate = true;
+        }
+
+        uniforms["time"].value = 10 * timestamp / 1000
+        if (run) {
+          globeInnerMaterial.opacity = t < 0.5 ? 0 : 2 * t - 1
+          globeShieldMaterial.opacity = t
+          points.rotation.y += 0.002
+        } else {
+          globeShieldMaterial.opacity = 1-t
+          globeInnerMaterial.opacity = 1-t
+          points.rotation.y = (1 - t) * points.rotation.y
+        }
+      })
+
+      document.addEventListener('dblclick', function () {
+        var vertices3 = vertices2
+        vertices2 = vertices1
+        vertices1 = vertices3
+        t = 0
+        run = !run
+      })
+    })
+    scene.fog = new THREE.Fog(0x000000, 0, 700)
+    camera.position.z = 400
+    camera.position.y = 100
+    camera.lookAt(scene.position)
+  </script>
+</body>
+
+</html>
