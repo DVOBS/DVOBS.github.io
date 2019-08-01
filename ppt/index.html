@@ -299,15 +299,15 @@ var app = new Vue({
         </section>
 
         <section data-example="three_2">
-          <h2>Three.js 点状云</h2>
+          <h3>Three.js 点状云地球</h3>
         </section>
       </section>
 
       <section>
         <h2>Thanks</h2>
-        <h3><a href="https://github.com/DVOBS/DVOBS.github.io">
+        <!-- <h3><a href="https://github.com/DVOBS/DVOBS.github.io">
           https://github.com/DVOBS/DVOBS.github.io
-        </a></h3>
+        </a></h3> -->
         <h3>♪(･ω･)ﾉ</h3>
       </section>
     </div>
@@ -321,7 +321,7 @@ var app = new Vue({
       }
 
       document.addEventListener('keydown', function (event) {
-        if (event.code === 'Space' && event.ctrlKey && currentExample) {
+        if (event.code === 'KeyC' && currentExample) {
           openCodeView()
         }
       })
