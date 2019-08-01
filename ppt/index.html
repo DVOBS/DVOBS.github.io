@@ -154,12 +154,12 @@ data = pie(data)
 console.log(JSON.stringify(data[0]))
           </code></pre>
           <pre class="fragment fade-up"><code class="hljs javascript" data-line-numbers="">{
-  'data': { 'platform': 'Android', 'percentage': 40.11 },
-  'index': 0,
-  'value': 40.11,
-  'startAngle': 0,
-  'endAngle': 2.8045689146558335,
-  'padAngle': 0
+  "data": { "platform": "Android", "percentage": 40.11 },
+  "index": 0,
+  "value": 40.11,
+  "startAngle": 0,
+  "endAngle": 2.8045689146558335,
+  "padAngle": 0
 }</code></pre>
         </section>
 
@@ -174,7 +174,7 @@ console.log(JSON.stringify(data[0]))
           <h2>在Vue中使用D3.js</h2>
         </section>
 
-        <section data-example="d3_in_vue_0">
+        <section>
           <h3>在Vue中使用D3.js</h3>
           <pre><code class="hljs javascript" data-line-numbers="3-6,7-13">&lt;svg width="400" height="400"&gt;
   &lt;g transform="translate(200,200)"&gt;
@@ -235,7 +235,7 @@ console.log(JSON.stringify(data[0]))
           <h3>依赖收集</h3>
           <pre><code class="hljs javascript" data-line-numbers="3-11">var renderCount = 0
 var app = new Vue({
-  el: '#app',
+  el: "#app',
   render: function (createElement) {
     return createElement('div', [
       createElement('div', this.obj.key1),

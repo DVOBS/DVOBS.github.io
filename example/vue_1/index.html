@@ -8,8 +8,10 @@
 </head>
 <body>
 <div id="app">
-  <p>{{ obj.key1 }}</p>
+  <p>{{ objKey1 }}</p>
   <p>{{ array[0].name }}</p>
+  <p>{{ computedObj }}</p>
+  <p>{{ computedObj.name }}</p>
 </div>
   <script src="../../lib/vue.js"></script>
   <script>
@@ -38,6 +40,19 @@
           { name: 'item-1' },
           { name: 'item-2' }
         ]
+      },
+      computed: {
+        computedObj () {
+          return {
+            name: 123
+          }
+        },
+        objKey1 () {
+          return this.obj.key1
+        },
+        objKey2 () {
+          return this.obj.key2
+        }
       },
       updated() {
         console.log('updated')

@@ -43,14 +43,10 @@
 
     arc.append('path')
       .attr('d', path)
-      .attr('fill', d => color(d.data.percentage));
-
-    let label = d3.arc()
-      .outerRadius(radius)
-      .innerRadius(0);
+      .attr('fill', d => color(d.data.platform));
 
     arc.append('text')
-      .attr('transform', d => `translate(${label.centroid(d)})`)
+      .attr('transform', d => `translate(${path.centroid(d)})`)
       .attr('text-anchor', 'middle')
       .text(d => `${d.data.platform}:${d.data.percentage}%`);
   </script>
